@@ -54,8 +54,17 @@ def daysBetweenDates(y1, m1, d1, y2, m2, d2):
         answer = answer + 365 - days_until_date(m1, d1, y1)
 
     # days in last year
-    answer = answer + days_until_date(m2, d2, y2)
-
+    if y2 > y1:
+        answer = answer + days_until_date(m2, d2, y2)
+    else:
+        if isLeapYear(y2):
+            answer = answer + days_until_date(m2, d2, y2) - 366
+        else:
+            answer = answer + days_until_date(m2, d2, y2) - 365
     return answer
 
-print daysBetweenDates(1930, 3, 3, 2012, 12, 12)
+print daysBetweenDates(2012,1,1,2012,2,28)
+print daysBetweenDates(2012,1,1,2012,3,1)
+print daysBetweenDates(2011,6,30,2012,6,30)
+print daysBetweenDates(2011,1,1,2012,8,8)
+print daysBetweenDates(1900,1,1,1999,12,31)
