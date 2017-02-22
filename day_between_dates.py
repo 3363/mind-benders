@@ -63,8 +63,10 @@ def daysBetweenDates(y1, m1, d1, y2, m2, d2):
             answer = answer + days_until_date(m2, d2, y2) - 365
     return answer
 
-print daysBetweenDates(2012,1,1,2012,2,28)
+print daysBetweenDates(2012,2,1,2012,2,28)
 print daysBetweenDates(2012,1,1,2012,3,1)
 print daysBetweenDates(2011,6,30,2012,6,30)
 print daysBetweenDates(2011,1,1,2012,8,8)
 print daysBetweenDates(1900,1,1,1999,12,31)
+print daysBetweenDates(1983,3,3,2017,2,15)
+print daysBetweenDates(2016,9,17,2017,9,3)
