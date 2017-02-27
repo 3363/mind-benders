@@ -1,6 +1,6 @@
 from random import randint
 
-### Hardcoded data
+### Hardcoded playing data
 level_1 = [["Cho Chang", "Ravenclaw"], ["Gregory Goyle", "Slytherin"],["Angelina Johnson", "Gryffindor"],["Neville Longbottom", "Gryffindor"],["Luna Lovegood", "Ravenclaw"],["Remus Lupin", "Gryffindor"],["Draco Malfoy", "Slytherin"],["Harry Potter", "Gryffindor"],["Fred Weasley", "Gryffindor"],["George Weasley", "Gryffindor"],["Ginny Weasley", "Gryffindor"],["Ron Weasley", "Gryffindor"],["Hermione Granger", "Gryffindor"],["Cedric Diggory", "Hufflepuff"]]
 level_2 = [["Vogue","Madonna"],["Gonna Make You Sweat (Everybody Dance Now)","C&C Music Factory feat. F. Williams"],["Finally","Ce Ce Peniston"],["The Power","SNAP!"],["Baby Got Back","Sir Mix-A-Lot"],["Whoomp! There It Is","Tag Team"],["Show Me Love","Robin S."],["Groove Is In the Heart","Deee-Lite"],["Love Shack","The B-52s"],["Missing (Todd Terry mix)","Everything But the Girl"],["Unbelievable","EMF"],["I Like To Move It","Real 2 Real feat. The Mad Stuntman"],["Gettin' Jiggy Wit It","Will Smith"],["U Can't Touch This","MC Hammer"],["Get Ready For This","2 Unlimited"],["Good Vibrations","Marky Mark and The Funky Bunch feat. Loleatta Holloway"],["Believe (Life After Love)","Cher"],["Black Or White","Michael Jackson"],["Love Will Never Do (Without You)","Janet Jackson"],["Another Night","MC Sar and The Real McCoy"],["Touch Me (All Night Long)","Cathy Dennis"],["Rhythm is a Dancer","SNAP!"],["What Is Love?","Haddaway"],["Mr. Vain","Culture Beat"],["All That She Wants","Ace of Base"],["Be My Lover","La Bouche"],["I've Been Thinking About You","Londonbeat"],["This Is Your Night","Amber"],["Rhythm of the Night","Corona"],["C'mon N Ride It (The Train)","Quad City DJs"],["100% Pure Love","Crystal Waters"],["I'm Gonna Get You","Bizarre Inc. feat. Angie Gold"],["All Around the World","Lisa Stansfield"],["Strike It Up","Black Box"],["Everybody Everybody","Black Box feat. Martha Wash"],["Boom Boom Boom","The Outhere Brothers"],["We Like To Party","The Venga Boys"],["Here Comes the Hotstepper (Heartical mix)","Ini Kamoze"],["Tootsee Roll","69 Boyz"]]
 level_3 = [["Hamburger SV", "Germany"],["FC Nurnberg", "Germany"],["Borussia Dortmund", "Germany"],["Berliner FC Dynamo", "Germany"],["FC Carl Zeiss Jena", "Germany"],["SG Dynamo Dresden", "Germany"],["FC Lokomotive Leipzig", "Germany"],["SV Werder Bremen", "Germany"],["Eintracht Frankfurt", "Germany"],["FC Bayern Munchen", "Germany"],["VfB Stuttgart", "Germany"],["Bologna FC","Italy"],["Juventus FC","Italy"],["SSC Napoli","Italy"],["FC Internazionale Milano","Italy"],["AS Roma","Italy"],["ACF Fiorentina","Italy"],["Atalanta BC","Italy"],["Hellas Verona FC","Italy"],["AC Milan","Italy"],["UC Sampdoria","Italy"],["Malmo FF","Sweden"],["Osters IF","Sweden"],["IFK Goteborg","Sweden"],["IFK Norrkoping","Sweden"],["IK Brage","Sweden"],["Athlitiki Enosi Larissas FC", "Greece"],["Panathinaikos AO", "Greece"],["PAOK", "Greece"],["AEK FC", "Greece"],["FC Nantes", "France"],["AS Cannes", "France"],["Niort FC", "France"],["AS Monaco", "France"],["FC Metz", "France"],["FC Girondins de Bordeaux", "France"],["Montpellier HSC", "France"],["Olympique de Marseille", "France"],["AS Saint-Etienne", "France"],["FC Sochaux", "France"],["AJ Auxerre", "France"]]
@@ -9,6 +9,21 @@ level_5 = [["Alabama","Montgomery"],["Alaska","Juneau"],["Arizona","Phoenix"],["
 
 levels = [1, 2, 3, 4, 5]
 levels_array = [level_1,level_2,level_3,level_4,level_5]
+levels_coded = len(levels) # how many levels
+# Hardcoded game variables
+# These data can be changed accordingly to play the game a bit differently
+
+# number of things to guess in a level (it is the same for all levels and limited by length of shortest level
+# uncomment the lines to check the length of your data
+# print len(level_1)
+# print len(level_2)
+# print len(level_3)
+# print len(level_4)
+# print len(level_5)
+global_max_play_array = 14
+
+welcome_msg = "Welcome to the THERE ARE WRONG ANSWERS quiz!\nThere are some crazy fun stuff waiting for you.\nWe have " + str(levels_coded) + " levels waiting for you."
+
 
 ### Functions
 def ask_level():
@@ -50,8 +65,24 @@ def get_random_num(max_num):
     '''
     return randint(0,max_num)
 
+def generate_level_array(level_data_string, num_things_to_guess):
+    '''
+    inputs:
+    :param level_data_string: array with data to play in a level
+    :param num_things_to_guess: how many elements will be needed in the game
+    :return: array with randomly generated numbers to be used to pull QnA to play level
+    '''
+    play_array = []
+    max_play_number = len(level_data_string) - 1
+    max_play_array = num_things_to_guess
 
-def play_quiz_level(level_data_string, err_allowed, ask_user_question):
+    while len(play_array) < max_play_array:
+        num = get_random_num(max_play_number)
+        if num not in play_array:
+            play_array.append(num)
+    return play_array
+
+def play_level(level_data_string, err_allowed, ask_user_question, num_things_to_guess):
     '''
     function responsible for playing one level
     inputs: level data, errors allowed, and the text displayed to the user
@@ -59,45 +90,48 @@ def play_quiz_level(level_data_string, err_allowed, ask_user_question):
     '''
     # get random X numbers to play
     correct = 0
-    errors = 0
-    max = len(level_data_string) - 1
-    play_array = []
-
-    while len(play_array) < 1: # the amount of things to play, do not go more than 14, teher is only 14 in level_1, add more if needed
-        num = get_random_num(max)
-        if num not in play_array:
-            play_array.append(num)
+    total_errors = 0
+    question_location = 0
+    answer_location = 1
+    play_array = generate_level_array(level_data_string, global_max_play_array)
 
     # play the level
 
-    for number in play_array:
-        question = level_data_string[number][0]
-        answer = level_data_string[number][1]
+    for problem in play_array:
+        question = level_data_string[problem][question_location]
+        answer = level_data_string[problem][answer_location]
+        current_question_error = 0
+        max_question_error = 3 # how many times can user try one question
 
-        user_answer = raw_input(ask_user_question + " " + str(question) + "\n")
+        while current_question_error < max_question_error:
+            user_answer = raw_input(ask_user_question + " " + str(question) + "\n")
 
-        if answer.lower() == user_answer.lower():
-            correct += 1
-        else:
-            errors += 1
+            if answer.lower() == user_answer.lower():
+                correct += 1
+                break
+            else:
+                total_errors += 1
+                current_question_error += 1
 
-        if errors > err_allowed:
-            print "Sorry, you made " + str(errors) + " mistakes. GAME OVER!"
-            return False
+            if total_errors > err_allowed or current_question_error >= max_question_error:
+                print "You got this question wrong " + str(current_question_error) + " times. And made " + str(total_errors) + " total mistakes. GAME OVER!"
+                return False, total_errors
 
-    win = "Great game! You made " + str(errors) + " mistakes, and guessed " + str(correct) + "!\n"
+    win = "Great game! You made " + str(total_errors) + " total mistakes, and guessed " + str(correct) + " questions!\n"
     print win
-    return True, errors
+    return True, total_errors # go to next level, keep number of total running errors
+
+
 
 # PLAY THE ACTUAL GAME
+
+
 def play_game():
     '''
     logic for playing the game encapsulated in a function
     inputs: none
     outputs: game text
     '''
-    levels_coded = len(levels)
-    welcome_msg = "Welcome to the THERE ARE WRONG ANSWERS quiz!\nThere are some crazy fun stuff waiting for you.\nWe have " + str(levels_coded) + " levels waiting for you."
     print welcome_msg
     level = ask_level()
     print "Thank you! Here it comes..."
@@ -109,7 +143,7 @@ def play_game():
             print "There are 4 houses in Harry Potter series."
             print "Ravenclaw,", "Slytherin,", "Gryffindor", "and Hufflepuff"
             print "One more thing..."
-            game, level_errors = play_quiz_level(level_1, ask_error(), "What is the house of")
+            game, level_errors = play_level(level_1, ask_error(), "What is the house of")
             total_errors += level_errors
             if game:
                 print "-------------"
@@ -120,7 +154,7 @@ def play_game():
                 break
         elif level == 2:
             print "Let's live through the 90's again!"
-            game, level_errors = play_quiz_level(level_2, ask_error(), "Who sings this song:")
+            game, level_errors = play_level(level_2, ask_error(), "Who sings this song:")
             total_errors += level_errors
             if game:
                 print "-------------"
@@ -131,7 +165,7 @@ def play_game():
                 break
         elif level == 3:
             print "Let's play some soccer."
-            game, level_errors = play_quiz_level(level_3, ask_error(), "What country is this club from:")
+            game, level_errors = play_level(level_3, ask_error(), "What country is this club from:")
             total_errors += level_errors
             if game:
                 print "-------------"
@@ -142,7 +176,7 @@ def play_game():
                 break
         elif level == 4:
             print "\nLet's guess some European states capitals!"
-            game, level_errors = play_quiz_level(level_4, ask_error(), "What is the capital city of")
+            game, level_errors = play_level(level_4, ask_error(), "What is the capital city of")
             total_errors += level_errors
             if game:
                 print "-------------"
@@ -153,9 +187,10 @@ def play_game():
                 break
         elif level == 5:
             print "\nLet's guess some US states capitals!"
-            game, level_errors = play_quiz_level(level_5, ask_error(), "What is the capital city of")
+            game, level_errors = play_level(level_5, ask_error(), "What is the capital city of")
             total_errors += level_errors
             if game:
                 print "YOU WON! You made " + str(total_errors) + " errors."
             break
-play_game()
+# play_game()
+
