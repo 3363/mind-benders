@@ -7,12 +7,14 @@ level_3 = [["Hamburger SV", "Germany"],["FC Nurnberg", "Germany"],["Borussia Dor
 level_4 = [["Austria","Vienna"],["Belarus","Minsk"],["Belgium","Brussels"],["Bulgaria","Sofia"],["Croatia","Zagreb"],["Cyprus","Nicosia"],["Denmark","Copenhagen"],["Estonia","Tallinn"],["Finland","Helsinki"],["France","Paris"],["Germany","Berlin"],["Greece","Athens"],["Hungary","Budapest"],["Iceland","Reykjavik"],["Ireland","Dublin"],["Italy","Rome"],["Latvia","Riga"],["Liechtenstein","Vaduz"],["Lithuania","Vilnius"],["Luxembourg","Luxembourg"],["Macedonia","Skopje"],["Malta","Valletta"],["Moldova","Chisinau"],["Monaco","Monaco"],["Montenegro","Podgorica"],["Netherlands","Amsterdam"],["Norway","Oslo"],["Poland","Warsaw"],["Portugal","Lisbon"],["Romania","Bucharest"],["Russia","Moscow"],["San Marino","San Marino"],["Serbia","Belgrade"],["Slovakia","Bratislava"],["Slovenia","Ljubljana"],["Spain","Madrid"],["Sweden","Stockholm"],["Switzerland","Bern"],["Turkey","Ankara"],["Ukraine","Kyiv"]]
 level_5 = [["Alabama","Montgomery"],["Alaska","Juneau"],["Arizona","Phoenix"],["Arkansas","Little Rock"],["California","Sacramento"],["Colorado","Denver"],["Connecticut","Hartford"],["Delaware","Dover"],["Florida","Tallahassee"],["Georgia","Atlanta"],["Hawaii","Honolulu"],["Idaho","Boise"],["Illinois","Springfield"],["Indiana","Indianapolis"],["Iowa","Des Moines"],["Kansas","Topeka"],["Kentucky","Frankfort"],["Louisiana","Baton Rouge"],["Maine","Augusta"],["Maryland","Annapolis"],["Massachusetts","Boston"],["Michigan","Lansing"],["Minnesota","Saint Paul"],["Mississippi","Jackson"],["Missouri","Jefferson City"],["Montana","Helena"],["Nebraska","Lincoln"],["Nevada","Carson City"],["New Hampshire","Concord"],["New Jersey","Trenton"],["New Mexico","Santa Fe"],["New York","Albany"],["North Carolina","Raleigh"],["North Dakota","Bismarck"],["Ohio","Columbus"],["Oklahoma","Oklahoma City"],["Oregon","Salem"],["Pennsylvania","Harrisburg"],["Rhode Island","Providence"],["South Carolina","Columbia"],["South Dakota","Pierre"],["Tennessee","Nashville"],["Texas","Austin"],["Utah","Salt Lake City"],["Vermont","Montpelier"],["Virginia","Richmond"],["Washington","Olympia"],["West Virginia","Charleston"],["Wisconsin","Madison"],["Wyoming","Cheyenne"]]
 
-levels = [1, 2, 3, 4, 5]
-levels_array = [level_1,level_2,level_3,level_4,level_5]
+levels = [level_1,level_2,level_3,level_4,level_5]
+levels_numeric = [1,2,3,4,5]
 levels_coded = len(levels) # how many levels
+display_start_text = ["There are 4 houses in Harry Potter series.\nRavenclaw, Slytherin, Gryffindor and Hufflepuff\nOne more thing...", "Let's live through the 90's again!", "Let's play some soccer.", "Let's guess some European cities capitals!", "Let's guess some US states capitals!"]
+quiz_question = ["What is the house of", "Who sings this song:", "What country is this club from:", "What is the capital city of", "What is the capital city of"]
+
 # Hardcoded game variables
 # These data can be changed accordingly to play the game a bit differently
-
 # number of things to guess in a level (it is the same for all levels and limited by length of shortest level
 # uncomment the lines to check the length of your data
 # print len(level_1)
@@ -21,7 +23,6 @@ levels_coded = len(levels) # how many levels
 # print len(level_4)
 # print len(level_5)
 global_max_play_array = 14
-
 welcome_msg = "Welcome to the THERE ARE WRONG ANSWERS quiz!\nThere are some crazy fun stuff waiting for you.\nWe have " + str(levels_coded) + " levels waiting for you."
 
 
@@ -33,7 +34,7 @@ def ask_level():
     '''
     print "What level, would you like to play today?\n"
     level_number = 0
-    while level_number not in levels:
+    while level_number not in levels_numeric:
         level_number = raw_input("Please enter a number between '1' and '5'.\n")
         try:
             int(level_number)
@@ -51,7 +52,7 @@ def ask_error():
     '''
     error_number = u""
     while not error_number.isnumeric():
-        error_number = unicode(raw_input("How many errors before I fail you?\n")) #turn into unicode is required by isnumeric method
+        error_number = unicode(raw_input("How many total errors to fail level? Question always has 3 tries.\n")) #turn into unicode is required by isnumeric method
         try:
             int(error_number)
         except ValueError:
@@ -82,7 +83,7 @@ def generate_level_array(level_data_string, num_things_to_guess):
             play_array.append(num)
     return play_array
 
-def play_level(level_data_string, err_allowed, ask_user_question, num_things_to_guess):
+def play_level(level_data_string, err_allowed, ask_user_question, welcome_text, num_things_to_guess):
     '''
     function responsible for playing one level
     inputs: level data, errors allowed, and the text displayed to the user
@@ -94,6 +95,7 @@ def play_level(level_data_string, err_allowed, ask_user_question, num_things_to_
     question_location = 0
     answer_location = 1
     play_array = generate_level_array(level_data_string, global_max_play_array)
+    print welcome_text
 
     # play the level
 
@@ -117,15 +119,13 @@ def play_level(level_data_string, err_allowed, ask_user_question, num_things_to_
                 print "You got this question wrong " + str(current_question_error) + " times. And made " + str(total_errors) + " total mistakes. GAME OVER!"
                 return False, total_errors
 
-    win = "Great game! You made " + str(total_errors) + " total mistakes, and guessed " + str(correct) + " questions!\n"
+    win = "Great level! You made " + str(total_errors) + " total mistakes, and guessed " + str(correct) + " questions!\n"
     print win
     return True, total_errors # go to next level, keep number of total running errors
 
 
 
 # PLAY THE ACTUAL GAME
-
-
 def play_game():
     '''
     logic for playing the game encapsulated in a function
@@ -133,64 +133,22 @@ def play_game():
     outputs: game text
     '''
     print welcome_msg
-    level = ask_level()
-    print "Thank you! Here it comes..."
+    level = ask_level()  # ask initial level
     total_errors = 0
-    level_errors = 0
+
+    print "Thank you! Here it comes..."
 
     while level <= levels_coded:
-        if level == 1:
-            print "There are 4 houses in Harry Potter series."
-            print "Ravenclaw,", "Slytherin,", "Gryffindor", "and Hufflepuff"
-            print "One more thing..."
-            game, level_errors = play_level(level_1, ask_error(), "What is the house of")
-            total_errors += level_errors
-            if game:
-                print "-------------"
-                print "onto level 2...."
-                print "-------------"
-                level = 2
-            else:
-                break
-        elif level == 2:
-            print "Let's live through the 90's again!"
-            game, level_errors = play_level(level_2, ask_error(), "Who sings this song:")
-            total_errors += level_errors
-            if game:
-                print "-------------"
-                print "onto level 3...."
-                print "-------------"
-                level = 3
-            else:
-                break
-        elif level == 3:
-            print "Let's play some soccer."
-            game, level_errors = play_level(level_3, ask_error(), "What country is this club from:")
-            total_errors += level_errors
-            if game:
-                print "-------------"
-                print "onto level 4...."
-                print "-------------"
-                level = 4
-            else:
-                break
-        elif level == 4:
-            print "\nLet's guess some European states capitals!"
-            game, level_errors = play_level(level_4, ask_error(), "What is the capital city of")
-            total_errors += level_errors
-            if game:
-                print "-------------"
-                print "onto level 5...."
-                print "-------------"
-                level = 5
-            else:
-                break
-        elif level == 5:
-            print "\nLet's guess some US states capitals!"
-            game, level_errors = play_level(level_5, ask_error(), "What is the capital city of")
-            total_errors += level_errors
-            if game:
-                print "YOU WON! You made " + str(total_errors) + " errors."
-            break
-# play_game()
 
+        game, level_errors = play_level(levels[level-1], ask_error(), quiz_question[level-1], display_start_text[level-1], global_max_play_array)
+        total_errors += level_errors
+        if game and level < 5:
+            level += 1
+            print "-------------\nonto next level ....\n-------------"
+        elif game and level == 5:
+            print "YOU WON! You made " + str(total_errors) + " total errors."
+            level += 1
+        else:
+            break
+
+play_game()
