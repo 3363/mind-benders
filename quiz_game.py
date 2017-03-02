@@ -10,8 +10,8 @@ level_5 = [["Alabama","Montgomery"],["Alaska","Juneau"],["Arizona","Phoenix"],["
 levels = [level_1,level_2,level_3,level_4,level_5]
 levels_numeric = [1,2,3,4,5]
 levels_coded = len(levels) # how many levels
-display_start_text = ["There are 4 houses in Harry Potter series.\nRavenclaw, Slytherin, Gryffindor and Hufflepuff\nOne more thing...", "Let's live through the 90's again!", "Let's play some soccer.", "Let's guess some European cities capitals!", "Let's guess some US states capitals!"]
-quiz_question = ["What is the house of", "Who sings this song:", "What country is this club from:", "What is the capital city of", "What is the capital city of"]
+display_start_text = ["There are 4 houses in Harry Potter series.\nRavenclaw, Slytherin, Gryffindor and Hufflepuff\nOne more thing...", "Let's live through the 90's again!", "Let's play some soccer. Where are these clubs from?", "Let's guess some European cities capitals!", "Let's guess some US states capitals!"]
+quiz_question = [" is from the house ", " is sung by ", " is from ", "'s capital city is ", "'s capital city is "]
 
 # Hardcoded game variables
 # These data can be changed accordingly to play the game a bit differently
@@ -106,14 +106,17 @@ def play_level(level_data_string, err_allowed, ask_user_question, welcome_text, 
         max_question_error = 3 # how many times can user try one question
 
         while current_question_error < max_question_error:
-            user_answer = raw_input(ask_user_question + " " + str(question) + "\n")
+            user_answer = raw_input(str(question) + ask_user_question + "_________?"  + "\n")
 
             if answer.lower() == user_answer.lower():
+                print "Correct! " + str(question) + ask_user_question + answer +"."
                 correct += 1
                 break
             else:
                 total_errors += 1
                 current_question_error += 1
+                if current_question_error < max_question_error:
+                    print "Wrong answer. Please try again. You have " + str(3-current_question_error) + " tries left."
 
             if total_errors > err_allowed or current_question_error >= max_question_error:
                 print "You got this question wrong " + str(current_question_error) + " times. And made " + str(total_errors) + " total mistakes. GAME OVER!"
